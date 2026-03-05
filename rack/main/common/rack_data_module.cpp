@@ -262,7 +262,11 @@ int         RackDataModule::getDataBufferIndex(rack_time_t time)
         {
             old_rectime = getRecordingTime(dataBuffer[old_index].pData);
 
-            timeDiff = abs(old_rectime - time);
+            // cast to int64_t to handle possible wrap around
+            // uint32_t difference was ambiguous for compiler
+            timeDiff = abs(static_cast<int64_t>(old_rectime)
+                           - static_cast<int64_t>(time));
+
             if (timeDiff <= minTimeDiff)
             {
                 minTimeDiff = timeDiff;
