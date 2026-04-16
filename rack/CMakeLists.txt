@@ -6,9 +6,10 @@ include(CheckIncludeFile)
 include(CheckIncludeFiles)
 include(CheckIncludeFileCXX)
 include(CheckFunctionExists)
+include(GNUInstallDirs)
 
 set(PROJECT_NAME rack)
-project(${PROJECT_NAME})
+project(rack VERSION 0.6.90)
 
 
 #======================================================================
@@ -678,4 +679,40 @@ if(Build_RACK_Java)
   install_jar(${PROJECT_NAME}_jar DESTINATION "share/rack")
 
 endif(Build_RACK_Java)
+
+
+#======================================================================
+#   Package config export (find_package(RACK REQUIRED) support)
+#======================================================================
+
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/rack
+    FILES_MATCHING PATTERN "*.h"
+)
+
+install(EXPORT RACKTargets
+    FILE RACKTargets.cmake
+    NAMESPACE RACK::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/RACK
+)
+
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/RACKConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/RACKConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/RACK
+)
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/RACKConfigVersion.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/RACKConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/RACKConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/RACK
+)
 
